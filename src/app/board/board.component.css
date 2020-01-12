@@ -1,0 +1,15 @@
+div {
+    display: flex;
+}
+
+app-card {
+    display: inline;
+}
+
+app-foundation-row {
+    display: flex;
+}
+
+app-deck-row {
+    display: flex;
+}

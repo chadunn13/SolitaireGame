@@ -1,0 +1,8 @@
+<div *ngIf="this.card" class="container" (click)="this.toggleShow($event)">
+    <div class="back" *ngIf="this.hidden"></div>
+    <div class="front" *ngIf="!this.hidden" [ngClass]="this.isRedSuit() ? 'red' : 'black'">
+        <span class="value">{{this.getDisplayValue()}}</span>
+        <span class="suit">{{this.getDisplaySuit()}}</span>
+        <span class="center">{{this.getDisplaySuit()}}</span>
+    </div>
+</div>

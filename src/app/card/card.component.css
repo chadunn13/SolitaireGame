@@ -1,0 +1,62 @@
+div {
+    overflow:hidden;
+    display:inline-block;
+    margin: 0;
+    padding: 0;
+    height: 96px;
+    width: 68px;
+}
+
+.container {
+    border: 2px black solid;
+    position: relative;
+}
+
+.back {
+    background: blue;
+    background:
+    linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
+    linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
+    linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 5px -10px,
+    linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 5px -10px,
+    green;
+    background-size: 10px 20px;
+}
+
+.front {
+    background-color: white;
+}
+
+.value {
+    font-weight: bolder;
+    font-size: 24px;
+    margin: 1px;
+    margin-left: 4px;
+    float: left;
+}
+
+.suit {
+    font-weight: bolder;
+    font-size: 26px;
+    float: right;
+    margin: 1px;
+    margin-right: 4px;
+}
+
+.red {
+    color: darkred;
+}
+
+.black {
+    color: black;
+}
+
+.center {
+    position: absolute;
+    bottom: 0;
+    font-size: 64px;
+    line-height: 72px;
+    width: 100%;
+    left: 0;
+    text-align: center;
+}

@@ -1,0 +1,7 @@
+<app-stats-row></app-stats-row>
+<div>
+<app-foundation-row></app-foundation-row>
+<app-deck-row></app-deck-row>
+</div>
+<app-card *ngFor="let card of this.deck" [card]="card"></app-card>
+<button (click)="this.shuffleDeck($event)"> SHUFFLE</button>
