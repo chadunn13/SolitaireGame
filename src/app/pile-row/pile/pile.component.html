@@ -1,1 +1,6 @@
-<div></div>>
+<div class="container" [ngClass]="this.isEmpty() ? 'empty' : ''">
+    <div class="stack" *ngIf="!this.isEmpty()">
+        <app-card *ngFor="let card of this.pile.hiddenCards" [card]="card" [hidden]="true"></app-card>
+        <app-card *ngFor="let card of this.pile.shownCards" [card]="card" [hidden]="false"></app-card>
+    </div>
+</div>

@@ -29,12 +29,7 @@ export class DeckComponent implements OnInit, OnDestroy {
             this.deckIndex = state.deckIndex;
             this.deck = state.deck;
             this.deckTurn = state.deckTurn;
-            console.log(this.deckIndex);
-            console.log(this.deck.length);
-            console.log(this.deckTurn);
         });
-
-        this.store.dispatch(shuffleCards());
     }
 
     ngOnDestroy(): void {

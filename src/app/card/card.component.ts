@@ -10,19 +10,14 @@ import { Card } from '../models/card.model';
 })
 export class CardComponent implements OnInit {
 
-    public backImagePath = "/assets/img/b.gif"
     @Input() private card: Card;
     @Input() private hidden = false;
-    public frontImagePath = "/assets/img/2c.gif";
 
     constructor(
     ) {
     }
 
     ngOnInit() {
-        if (this.card) {
-            this.frontImagePath = "/assets/img/" + this.card.value + this.card.suit + ".gif";
-        }
     }
 
     public isHidden(): boolean {
@@ -41,15 +36,19 @@ export class CardComponent implements OnInit {
         this.show(this.hidden);
     }
 
+    public debug(): void {
+        console.log(this.getDisplayValue(), this.getDisplaySuit());
+    }
+
     public isRedSuit(): boolean {
         return this.card.suit === "d" || this.card.suit === "h";
     }
 
-    public getDisplayValue() {
+    public getDisplayValue(): string {
         return Value[this.card.value];
     }
 
-    public getDisplaySuit() {
+    public getDisplaySuit(): string {
         return Suit[this.card.suit];
     }
 }

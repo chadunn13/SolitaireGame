@@ -1,6 +1,9 @@
-div {
-    border: 2px black solid;
+.container {
     height: 96px;
     width: 68px;
     margin: 14px;
+}
+
+.empty {
+    border: 2px black solid;
 }

@@ -15,3 +15,11 @@ export const shuffleCards = createAction(
 export const removeCard = createAction(
     '[Deck] Remove Top Card'
 );
+
+export const resetState = createAction(
+    '[Board] Reset'
+);
+
+export const dealCards = createAction(
+    '[Board] Deal Cards'
+)

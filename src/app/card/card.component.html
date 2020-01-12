@@ -1,4 +1,4 @@
-<div *ngIf="this.card" class="container">
+<div *ngIf="this.card" class="container" (click)="this.debug()">
     <div class="back" *ngIf="this.hidden"></div>
     <div class="front" *ngIf="!this.hidden" [ngClass]="this.isRedSuit() ? 'red' : 'black'">
         <span class="value">{{this.getDisplayValue()}}</span>
