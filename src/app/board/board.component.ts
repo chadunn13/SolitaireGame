@@ -21,8 +21,4 @@ export class BoardComponent implements OnInit {
 
     }
 
-    public shuffleDeck($event) {
-        this.deck = this.deckService.shuffleDeck(this.deck);
-    }
-
 }

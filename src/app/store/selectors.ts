@@ -1,7 +1,9 @@
 import { AppState, BoardState } from './state'
-import { createSelector } from '@ngrx/store';
+import { createSelector, createFeatureSelector } from '@ngrx/store';
 
-export const selectBoardState(state: AppState) => state.boardState;
+export const selectBoardState = (state: AppState) => { return state.boardState };
+
+export const getBoardState = createFeatureSelector('boardState');
 
 export const selectDeck = createSelector(
     selectBoardState,
@@ -21,4 +23,9 @@ export const selectFoundations = createSelector(
 export const selectDeckIndex = createSelector(
     selectBoardState,
     (state: BoardState) => state.deckIndex
+);
+
+export const selectDeckTurn = createSelector(
+    selectBoardState,
+    (state: BoardState) => state.deckTurn
 );

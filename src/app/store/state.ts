@@ -9,13 +9,15 @@ export interface AppState {
 export interface BoardState {
     deck: Card[];
     deckIndex: number;
+    deckTurn: number;
     piles: Pile[];
     foundations: Foundation[];
 }
 
 export const initialState: BoardState = {
     deck: Cards,
-    deckIndex: 0,
+    deckIndex: -1,
+    deckTurn: 0,
     piles: [],
     foundations: []
 }

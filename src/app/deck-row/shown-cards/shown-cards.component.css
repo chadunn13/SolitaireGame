@@ -1,0 +1,22 @@
+.empty {
+    border: 2px black solid;
+    height: 96px;
+    width: 68px;
+}
+
+.slot {
+    display:inline-block;
+    margin: 8px;
+    padding: 0;
+    height: 100px;
+    width: 72px;
+    position: relative;
+}
+
+.container {
+    padding: 6px;
+}
+
+.secondary {
+    opacity: 0.5;
+}

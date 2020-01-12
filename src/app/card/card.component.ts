@@ -37,7 +37,7 @@ export class CardComponent implements OnInit {
         return this.card;
     }
 
-    public toggleShow($event): void {
+    public toggleShow(): void {
         this.show(this.hidden);
     }
 
