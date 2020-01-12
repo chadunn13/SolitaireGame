@@ -1,11 +1,12 @@
 .empty {
     border: 2px black solid;
+    display: inline-block;
     height: 96px;
     width: 68px;
 }
 
 .slot {
-    display:inline-block;
+    display: inline-block;
     margin: 8px;
     padding: 0;
     height: 100px;

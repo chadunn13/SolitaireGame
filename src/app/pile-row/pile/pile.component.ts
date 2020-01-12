@@ -37,4 +37,12 @@ export class PileComponent implements OnInit {
             return true;
         }
     }
+
+    public getTopOffset(i: number): string {
+        return (30 * i).toString() + 'px';
+    }
+
+    public getZIndex(i: number): string {
+        return (i).toString();
+    }
 }

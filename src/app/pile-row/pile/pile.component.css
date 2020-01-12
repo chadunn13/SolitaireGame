@@ -7,3 +7,12 @@
 .empty {
     border: 2px black solid;
 }
+
+.stack {
+    display: block;
+    position: relative;
+}
+
+.stack > app-card {
+    position: absolute;
+}
