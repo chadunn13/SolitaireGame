@@ -48,11 +48,7 @@ export class CardComponent implements OnInit, OnDestroy {
 
     private dragEnded($event: CdkDragEnd) {
         this.el.nativeElement.style['z-index'] = this.tempZIndex;
-        // console.log("dragEnded");
-        // this.debug();
-        // console.log($event);
         $event.source.reset();
-        // this.dragRef.reset();
     }
 
     private dragMoved($event) {

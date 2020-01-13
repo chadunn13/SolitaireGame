@@ -30,7 +30,6 @@ const removeTopCard = (state: BoardState): BoardState => {
     if (state.deckIndex !== -1 && state.deckIndex <= newDeck.length - 1) {
         newDeck.splice(state.deckIndex, 1);
         newDeckIndex = state.deckIndex - 1;
-        console.log(newDeck.length);
     }
     return { ...state, deck: newDeck, deckIndex: newDeckIndex };
 }
@@ -46,10 +45,6 @@ const dealCardsToPiles = (state: BoardState): BoardState => {
             hiddenCards.push(newDeck.splice(0, 1)[0]);
         }
         shownCards.push(newDeck.splice(0, 1)[0]);
-        console.log(i);
-        console.log(hiddenCards);
-        console.log(shownCards);
-        console.log(newDeck);
         newPiles.push(
             { index: i, hiddenCards: hiddenCards, shownCards: shownCards }
         );
@@ -115,10 +110,10 @@ const attemptMoveCardToPile = (state: BoardState, cards: Card[], dest: Pile): Bo
     // If moving a stack onto a normal pile
     let destCard = dest.shownCards[dest.shownCards.length - 1];
     let headCard = cards[0];
-    if (
+    if (!isValidMove && (
         (destCard.suit === "s" || destCard.suit === "c") && (headCard.suit === "h" || headCard.suit === "d") ||
         (destCard.suit === "h" || destCard.suit === "d") && (headCard.suit === "s" || headCard.suit === "c")
-    ) {
+    )) {
         // if cards are opposite suits and head card is one value less, it's a valid move
         if (isValueOneBigger(destCard.value, headCard.value)) {
             isValidMove = true;
@@ -164,7 +159,6 @@ const boardReducer = createReducer(
     on(shuffleCards, state => ({ ...state, deck: DeckService.shuffleDeck(Object.assign([], state.deck)) })),
     on(resetState, state => (initialBoardState)),
     on(dealCards, state => (dealCardsToPiles(state))),
-    on(dealCards, state => (dealCardsToPiles(state))),
     on(attemptMoveToPile, (state, { cards, dest }) => (attemptMoveCardToPile(state, cards, dest))),
     on(attemptMoveToFoundation, (state, { cards, dest }) => (attemptMoveCardToFoundation(state, cards, dest))),
 );
@@ -174,10 +168,6 @@ const appReducer = createReducer(
     on(undoMove, state => (restorePreviousState(state))),
 );
 
-// export function reducer(state: AppState | undefined, action: Action): AppState {
-
-// };
-
 export const reducers: ActionReducerMap<AppState> = {
     boardState: null,
     previousStates: null
@@ -185,26 +175,22 @@ export const reducers: ActionReducerMap<AppState> = {
 
 export function metaReducer(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
     return function (state, action) {
-        console.log("reducer");
+        let newState: AppState;
         if (!state) {
-            state = initialAppState;
+            newState = initialAppState;
+        } else {
+            newState = JSON.parse(JSON.stringify(state));
         }
-        let newState;
         if (action.type.search('\[Board\]') || action.type.search('\[Deck\]')) {
             // TODO: move previous state addition to effect to prevent invalid moves adding to undo stack
-            console.log(state);
-            console.log(action);
             newState = {
                 ...state,
-                previousStates:  JSON.parse(JSON.stringify(state.previousStates)).concat([state.boardState]),
+                previousStates: JSON.parse(JSON.stringify(state.previousStates)).concat([state.boardState]),
                 boardState: boardReducer(state.boardState, action)
             };
-            console.log(newState);
-            return newState;
         } else if (action.type.search('\[App\]')) {
             newState = appReducer(state, action);
-            console.log(newState);
-            return newState;
         }
+        return newState;
     };
 }
