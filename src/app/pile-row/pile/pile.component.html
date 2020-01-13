@@ -1,6 +1,29 @@
-<div class="container" [ngClass]="this.isEmpty() ? 'empty' : ''">
+<div class="container">
     <div class="stack" *ngIf="!this.isEmpty()">
-        <app-card [style.margin-top]="getTopOffset(i)" [style.z-index]="getZIndex(i)" *ngFor="let card of this.pile.hiddenCards; index as i" [card]="card" [hidden]="true"></app-card>
-        <app-card [style.margin-top]="getTopOffset(i + this.pile.hiddenCards.length)" [style.z-index]="getZIndex(i + this.pile.hiddenCards.length)" *ngFor="let card of this.pile.shownCards; index as i" [card]="card" [hidden]="false"></app-card>
+        <app-card
+            [style.margin-top]="getTopOffset(i)"
+            [style.z-index]="getZIndex(i)"
+            *ngFor="let card of this.pile.hiddenCards; index as i"
+            [card]="card"
+            [hidden]="true"
+            [pile]="this.pile"
+        ></app-card>
+        <app-card
+            [style.margin-top]="getTopOffset(i + this.pile.hiddenCards.length)"
+            [style.z-index]="getZIndex(i + this.pile.hiddenCards.length)"
+            *ngFor="let card of this.pile.shownCards; index as i"
+            [card]="card"
+            [hidden]="false"
+            [pile]="this.pile"
+        ></app-card>
+    </div>
+    <div
+        class="empty"
+        *ngIf="this.isEmpty()"
+        cdkDropList
+        (cdkDropListDropped)="dropped($event)"
+        #listOne="cdkDropList"
+        [cdkDropListConnectedTo]="[listOne]"
+    >
     </div>
 </div>

@@ -1,4 +1,17 @@
-<div *ngIf="this.card" class="container" (click)="this.debug()">
+<div
+    *ngIf="this.card"
+    class="container"
+    [attr.data-cardVal]="this.card.value + this.card.suit"
+    (click)="this.debug()"
+    cdkDrag
+    (cdkDragStarted)="dragStarted($event)"
+    (cdkDragEnded)="dragEnded($event)"
+    (cdkDragMoved)="dragMoved($event)"
+    cdkDropList
+    (cdkDropListDropped)="dropped($event)"
+    #listOne="cdkDropList"
+    [cdkDropListConnectedTo]="[listOne]"
+    >
     <div class="back" *ngIf="this.hidden"></div>
     <div class="front" *ngIf="!this.hidden" [ngClass]="this.isRedSuit() ? 'red' : 'black'">
         <span class="value">{{this.getDisplayValue()}}</span>

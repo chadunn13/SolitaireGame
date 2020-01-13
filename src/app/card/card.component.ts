@@ -1,23 +1,70 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Directive, ViewChild, ElementRef, ApplicationRef, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Suit } from '../constants/suit';
 import { Value } from '../constants/value';
 import { Card } from '../models/card.model';
+import { Store } from '@ngrx/store';
+import { AppState, attemptMoveToPile, BoardState } from '../store';
+import { DragRef, CdkDrag, CdkDragEnd, CdkDropList, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { Pile } from '../models/pile.model';
+import { Subscription } from 'rxjs';
+import { DeckService } from '../services/deck.service';
 
 @Component({
     selector: 'app-card',
     templateUrl: './card.component.html',
     styleUrls: ['./card.component.css']
 })
-export class CardComponent implements OnInit {
+export class CardComponent implements OnInit, OnDestroy {
+
 
     @Input() private card: Card;
+    @Input() private pile: Pile;
     @Input() private hidden = false;
+    @Input() isFoundation = false;
+    private tempZIndex;
+    private subscriptions: Subscription;
 
     constructor(
+        private deckService: DeckService,
+        private store: Store<AppState>,
+        private el: ElementRef,
     ) {
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
+        
+    }
+
+    ngOnDestroy(): void {
+        // this.subscriptions.unsubscribe();
+    }
+
+    private dragStarted($event) {
+        this.tempZIndex = this.el.nativeElement.style['z-index'];
+        this.el.nativeElement.style['z-index'] = 100;
+    }
+
+    private dragEnded($event: CdkDragEnd) {
+        this.el.nativeElement.style['z-index'] = this.tempZIndex;
+        // console.log("dragEnded");
+        // this.debug();
+        // console.log($event);
+        $event.source.reset();
+        // this.dragRef.reset();
+    }
+
+    private dragMoved($event) {
+
+    }
+
+    private dropped($event: CdkDragDrop<any,any>) {
+        if (this.isFoundation) {
+            // TODO
+        } else {
+            let c = $event.previousContainer.element.nativeElement.dataset['cardval'];
+            let cards = this.deckService.getCardStack(c);
+            this.store.dispatch(attemptMoveToPile({ cards: cards, dest: this.pile}));
+        }
     }
 
     public isHidden(): boolean {
@@ -45,7 +92,7 @@ export class CardComponent implements OnInit {
     }
 
     public getDisplayValue(): string {
-        return Value[this.card.value];
+        return Value[this.card.value][1];
     }
 
     public getDisplaySuit(): string {

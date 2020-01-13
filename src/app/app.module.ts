@@ -16,6 +16,7 @@ import { ShownCardsComponent } from './deck-row/shown-cards/shown-cards.componen
 import { StatsRowComponent } from './stats-row/stats-row.component';
 import { DeckService } from './services/deck.service';
 import { reducers, metaReducers } from './store/reducers';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
     declarations: [
@@ -34,6 +35,7 @@ import { reducers, metaReducers } from './store/reducers';
     imports: [
         BrowserModule,
         AppRoutingModule,
+        DragDropModule,
         StoreModule.forRoot(reducers, {
             metaReducers,
             runtimeChecks: {

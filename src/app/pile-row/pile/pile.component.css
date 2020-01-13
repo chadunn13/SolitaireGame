@@ -6,6 +6,9 @@
 
 .empty {
     border: 2px black solid;
+    display: inline-block;
+    height: 96px;
+    width: 68px;
 }
 
 .stack {

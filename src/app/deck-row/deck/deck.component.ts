@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store, select } from '@ngrx/store';
-import { BoardState, AppState, drawFromDeck, shuffleCards, removeCard } from 'src/app/store';
+import { BoardState, AppState, drawFromDeck, shuffleCards } from 'src/app/store';
 import { Card } from 'src/app/models/card.model';
 import { Subscription, Observable } from 'rxjs';
 import { selectBoardState, selectDeckIndex, getBoardState } from 'src/app/store/selectors';
@@ -44,10 +44,6 @@ export class DeckComponent implements OnInit, OnDestroy {
         if (this.canDrawCards()) {
             this.store.dispatch(drawFromDeck());
         }
-    }
-
-    public removeCard() {
-        this.store.dispatch(removeCard());
     }
 
     public canDrawCards() {
