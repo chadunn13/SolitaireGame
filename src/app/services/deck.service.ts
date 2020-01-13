@@ -56,6 +56,7 @@ export class DeckService {
             for (let i = 0; i < pile.shownCards.length; i++) {
                 if (DeckService.areCardsEqual(card, pile.shownCards[i]) || found) {
                     cards.push(pile.shownCards[i]);
+                    found = true;
                 }
             }
             if (found) {

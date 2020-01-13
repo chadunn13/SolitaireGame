@@ -1,7 +1,7 @@
-import { createReducer, ActionReducerMap, MetaReducer, on } from '@ngrx/store';
-import { initialState, BoardState, AppState } from './state';
+import { createReducer, ActionReducerMap, MetaReducer, on, Action, ActionReducer } from '@ngrx/store';
+import { initialBoardState, BoardState, AppState, initialAppState } from './state';
 import { environment } from 'src/environments/environment';
-import { drawFromDeck, shuffleCards, resetState, dealCards, attemptMoveToPile, attemptMoveToFoundation } from './actions';
+import { drawFromDeck, shuffleCards, resetState, dealCards, attemptMoveToPile, attemptMoveToFoundation, undoMove } from './actions';
 import { DeckService } from 'src/app/services/deck.service';
 import { Pile } from '../models/pile.model';
 import { Card } from '../models/card.model';
@@ -38,7 +38,7 @@ const removeTopCard = (state: BoardState): BoardState => {
 
 const dealCardsToPiles = (state: BoardState): BoardState => {
     let newPiles: Pile[] = [];
-    let newDeck = Object.assign([], state.deck);
+    let newDeck = JSON.parse(JSON.stringify(state.deck));
     for (let i = 0; i < 7; i++) {
         let hiddenCards = [];
         let shownCards = [];
@@ -46,6 +46,10 @@ const dealCardsToPiles = (state: BoardState): BoardState => {
             hiddenCards.push(newDeck.splice(0, 1)[0]);
         }
         shownCards.push(newDeck.splice(0, 1)[0]);
+        console.log(i);
+        console.log(hiddenCards);
+        console.log(shownCards);
+        console.log(newDeck);
         newPiles.push(
             { index: i, hiddenCards: hiddenCards, shownCards: shownCards }
         );
@@ -55,9 +59,9 @@ const dealCardsToPiles = (state: BoardState): BoardState => {
 
 // Remove a card from its current position anywhere on the board and handle side effects
 const removeCard = (state: BoardState, card: Card): BoardState => {
-    let newState = JSON.parse(JSON.stringify(state));
-    console.log('removing');
+    let newState: BoardState = JSON.parse(JSON.stringify(state));
 
+    // if moving from a foundation
     for (let foundation of newState.foundations) {
         for (let i = 0; i < foundation.cardStack.length; i++) {
             if (card === foundation.cardStack[i]) {
@@ -71,6 +75,7 @@ const removeCard = (state: BoardState, card: Card): BoardState => {
         }
     }
 
+    // if moving from a pile
     for (let pile of newState.piles) {
         for (let i = 0; i < pile.shownCards.length; i++) {
             if (DeckService.areCardsEqual(card, pile.shownCards[i])) {
@@ -78,15 +83,15 @@ const removeCard = (state: BoardState, card: Card): BoardState => {
                 // If last card and there are still hidden ones in the pile, flip over the top hidden one
                 if (pile.shownCards.length === 0 && pile.hiddenCards.length > 0) {
                     pile.shownCards.push(pile.hiddenCards.splice(pile.hiddenCards.length - 1, 1)[0]);
-                    console.log(pile);
                 }
                 return newState;
             }
         }
     }
 
+    // if moving from the deck
     for (let i = 0; i < newState.deck.length; i++) {
-        if (card === newState.deck[i]) {
+        if (DeckService.areCardsEqual(card, newState.deck[i])) {
             newState.deck.splice(i, 1);
             newState.deckIndex--;
         }
@@ -98,87 +103,108 @@ const removeCard = (state: BoardState, card: Card): BoardState => {
 
 
 const attemptMoveCardToPile = (state: BoardState, cards: Card[], dest: Pile): BoardState => {
-    let newState = JSON.parse(JSON.stringify(state));
-    console.log(cards);
-    console.log('temp1');
+    let newState: BoardState = JSON.parse(JSON.stringify(state));
+    let isValidMove = false;
 
     // If moving a King-headed stack to an empty pile
-    console.log(dest);
     if (dest.shownCards.length === 0 && dest.hiddenCards.length === 0) {
-        console.log('temp1.1');
         if (cards[0].value === "k") {
-            for (let card of cards) {
-                newState = removeCard(newState, card);
-            }
-            for (let card of cards) {
-                let newDest = newState.piles.filter(pile => dest.index === pile.index)[0];
-                newDest.shownCards.push(card);
-            }
-            return newState;
+            isValidMove = true;
         }
     }
-    console.log('temp2');
     // If moving a stack onto a normal pile
     let destCard = dest.shownCards[dest.shownCards.length - 1];
     let headCard = cards[0];
-    if (!destCard || !headCard) {
-        return newState;
-    }
-    console.log('temp3');
     if (
         (destCard.suit === "s" || destCard.suit === "c") && (headCard.suit === "h" || headCard.suit === "d") ||
         (destCard.suit === "h" || destCard.suit === "d") && (headCard.suit === "s" || headCard.suit === "c")
     ) {
+        // if cards are opposite suits and head card is one value less, it's a valid move
         if (isValueOneBigger(destCard.value, headCard.value)) {
-            for (let card of cards) {
-                newState = removeCard(newState, card);
-                console.log(newState);
-            }
-            for (let card of cards) {
-                console.log('dest');
-                console.log(dest);
-                console.log(newState);
-                let newDest = newState.piles.filter(pile => dest.index === pile.index)[0];
-                newDest.shownCards.push(card);
-            }
-            return newState;
+            isValidMove = true;
         }
     }
 
-    console.log('end');
-    console.log(newState);
+    if (isValidMove) {
+        for (let card of cards) {
+            // remove all cards in the stack that are getting moved from their original positions
+            newState = removeCard(newState, card);
+        }
+        for (let card of cards) {
+            // add all the cards in the stack to the new position
+            let newDest = newState.piles.filter(pile => dest.index === pile.index)[0];
+            newDest.shownCards.push(card);
+        }
+    } else {
+        console.log("Invalid move");
+    }
+
     return newState;
 }
 
 const attemptMoveCardToFoundation = (state: BoardState, cards: Card[], dest: Foundation): BoardState => {
-    let newState = JSON.parse(JSON.stringify(state));
+    let newState: BoardState = JSON.parse(JSON.stringify(state));
+    // TODO
+    return newState;
+}
+
+const restorePreviousState = (state: AppState): AppState => {
+    let newState: AppState = JSON.parse(JSON.stringify(state));
+
+    if (newState.previousStates.length > 0) {
+        newState.boardState = newState.previousStates.pop();
+    }
 
     return newState;
 }
 
-const reducer = createReducer(
-    initialState,
+const boardReducer = createReducer(
+    initialBoardState,
     on(drawFromDeck, state => (drawCardsFromDeck(state))),
     on(shuffleCards, state => ({ ...state, deck: DeckService.shuffleDeck(Object.assign([], state.deck)) })),
-    on(resetState, state => (initialState)),
+    on(resetState, state => (initialBoardState)),
+    on(dealCards, state => (dealCardsToPiles(state))),
     on(dealCards, state => (dealCardsToPiles(state))),
     on(attemptMoveToPile, (state, { cards, dest }) => (attemptMoveCardToPile(state, cards, dest))),
-    on(attemptMoveToFoundation, (state, { cards, dest }) => (attemptMoveCardToFoundation(state, cards, dest)))
+    on(attemptMoveToFoundation, (state, { cards, dest }) => (attemptMoveCardToFoundation(state, cards, dest))),
 );
 
-// export function reducer(state: BoardState | undefined, action: Action) {
-//     console.log('reducer');
-//     switch (action) {
-//         case drawFromDeck:
+const appReducer = createReducer(
+    initialAppState,
+    on(undoMove, state => (restorePreviousState(state))),
+);
 
-//         default:
-//             return state;
-//     }
-// }
+// export function reducer(state: AppState | undefined, action: Action): AppState {
+
+// };
 
 export const reducers: ActionReducerMap<AppState> = {
-    boardState: reducer,
+    boardState: null,
+    previousStates: null
 };
 
-
-export const metaReducers: MetaReducer<AppState>[] = !environment.production ? [] : [];
+export function metaReducer(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
+    return function (state, action) {
+        console.log("reducer");
+        if (!state) {
+            state = initialAppState;
+        }
+        let newState;
+        if (action.type.search('\[Board\]') || action.type.search('\[Deck\]')) {
+            // TODO: move previous state addition to effect to prevent invalid moves adding to undo stack
+            console.log(state);
+            console.log(action);
+            newState = {
+                ...state,
+                previousStates:  JSON.parse(JSON.stringify(state.previousStates)).concat([state.boardState]),
+                boardState: boardReducer(state.boardState, action)
+            };
+            console.log(newState);
+            return newState;
+        } else if (action.type.search('\[App\]')) {
+            newState = appReducer(state, action);
+            console.log(newState);
+            return newState;
+        }
+    };
+}

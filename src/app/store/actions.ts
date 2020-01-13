@@ -23,6 +23,10 @@ export const dealCards = createAction(
     '[Board] Deal Cards'
 );
 
+export const undoMove = createAction(
+    '[App] Undo Move'
+);
+
 export const attemptMoveToPile = createAction(
     '[Board] Attempt Move to Pile',
     props<{ cards: Card[], dest: Pile }>()

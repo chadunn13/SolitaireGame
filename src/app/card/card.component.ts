@@ -8,6 +8,7 @@ import { DragRef, CdkDrag, CdkDragEnd, CdkDropList, CdkDragDrop } from '@angular
 import { Pile } from '../models/pile.model';
 import { Subscription } from 'rxjs';
 import { DeckService } from '../services/deck.service';
+import { Foundation } from '../models/foundation.model';
 
 @Component({
     selector: 'app-card',
@@ -18,9 +19,10 @@ export class CardComponent implements OnInit, OnDestroy {
 
 
     @Input() private card: Card;
-    @Input() private pile: Pile;
+    @Input() private pile: Pile = null;
+    @Input() private foundation: Foundation = null;
     @Input() private hidden = false;
-    @Input() isFoundation = false;
+    @Input() disabled = false;
     private tempZIndex;
     private subscriptions: Subscription;
 
@@ -58,12 +60,14 @@ export class CardComponent implements OnInit, OnDestroy {
     }
 
     private dropped($event: CdkDragDrop<any,any>) {
-        if (this.isFoundation) {
+        if (this.foundation) {
             // TODO
-        } else {
+        } else if (this.pile) {
             let c = $event.previousContainer.element.nativeElement.dataset['cardval'];
             let cards = this.deckService.getCardStack(c);
             this.store.dispatch(attemptMoveToPile({ cards: cards, dest: this.pile}));
+        } else {
+            console.log("Invalid move");
         }
     }
 

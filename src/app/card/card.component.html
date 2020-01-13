@@ -7,10 +7,12 @@
     (cdkDragStarted)="dragStarted($event)"
     (cdkDragEnded)="dragEnded($event)"
     (cdkDragMoved)="dragMoved($event)"
+    [cdkDragDisabled]="this.disabled || this.hidden"
     cdkDropList
     (cdkDropListDropped)="dropped($event)"
     #listOne="cdkDropList"
     [cdkDropListConnectedTo]="[listOne]"
+    [ngClass]="this.disabled ? 'disabled' : ''"
     >
     <div class="back" *ngIf="this.hidden"></div>
     <div class="front" *ngIf="!this.hidden" [ngClass]="this.isRedSuit() ? 'red' : 'black'">

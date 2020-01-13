@@ -13,3 +13,7 @@ app-foundation-row {
 app-deck-row {
     display: flex;
 }
+
+button {
+    float: right
+}

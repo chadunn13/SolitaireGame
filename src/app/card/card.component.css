@@ -60,3 +60,7 @@ div {
     left: 0;
     text-align: center;
 }
+
+.disabled {
+    opacity: 0.66;
+}

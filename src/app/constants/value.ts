@@ -16,5 +16,5 @@ export const Value = {
 
 // TODO: implement
 export const isValueOneBigger = (bigger: string, smaller: string): boolean => {
-    return Value[bigger][0] > Value[smaller][0];
+    return Value[bigger][0] === Value[smaller][0] + 1;
 }

@@ -15,8 +15,9 @@ import { DeckRowComponent } from './deck-row/deck-row.component';
 import { ShownCardsComponent } from './deck-row/shown-cards/shown-cards.component';
 import { StatsRowComponent } from './stats-row/stats-row.component';
 import { DeckService } from './services/deck.service';
-import { reducers, metaReducers } from './store/reducers';
+import { metaReducer, reducers } from './store/reducers';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { initialAppState, initialBoardState } from './store';
 
 @NgModule({
     declarations: [
@@ -36,13 +37,13 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
         BrowserModule,
         AppRoutingModule,
         DragDropModule,
-        StoreModule.forRoot(reducers, {
-            metaReducers,
-            runtimeChecks: {
-                strictStateImmutability: true,
-                strictActionImmutability: true
+        StoreModule.forRoot(
+            reducers,
+            {
+                metaReducers: [metaReducer],
+                initialState: initialAppState
             }
-        })
+        )
     ],
     providers: [DeckService],
     bootstrap: [AppComponent]
