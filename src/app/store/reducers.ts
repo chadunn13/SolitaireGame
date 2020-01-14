@@ -67,7 +67,7 @@ const removeCard = (state: BoardState, card: Card): BoardState => {
     // if moving from a foundation
     for (let foundation of newState.foundations) {
         for (let i = 0; i < foundation.cardStack.length; i++) {
-            if (card === foundation.cardStack[i]) {
+            if (DeckService.areCardsEqual(card, foundation.cardStack[i])) {
                 foundation.cardStack.splice(i, 1);
                 // If last card, unbind the foundation's suit so any may go there
                 if (foundation.cardStack.length === 0) {
