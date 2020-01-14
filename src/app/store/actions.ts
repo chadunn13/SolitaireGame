@@ -3,10 +3,6 @@ import { Card } from '../models/card.model';
 import { Pile } from '../models/pile.model';
 import { Foundation } from '../models/foundation.model';
 
-// export const deckActions = {
-//     '[DECK] Draw From Deck': DrawFromDeck
-// }
-
 export const drawFromDeck = createAction(
     '[Deck] Draw From Deck'
 );
@@ -36,6 +32,11 @@ export const resetGame = createAction(
 // Only reset deck/pile/foundations, leave undo stack intact
 export const resetGameSoft = createAction(
     '[App] Reset Game Soft'
+);
+
+// Only reset deck/pile/foundations, leave undo stack intact
+export const invalidMove = createAction(
+    '[App] Create New State'
 );
 
 export const attemptMoveToPile = createAction(

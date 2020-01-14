@@ -1,15 +1,16 @@
-import { createReducer, ActionReducerMap, MetaReducer, on, Action, ActionReducer, State } from '@ngrx/store';
-import { initialBoardState, BoardState, AppState, initialAppState } from './state';
-import { environment } from 'src/environments/environment';
-import { drawFromDeck, shuffleCards, dealCards, attemptMoveToPile, attemptMoveToFoundation, undoMove, resetGame, newGame, resetGameSoft, createNewState } from './actions';
+import { ActionReducer, ActionReducerMap, createReducer, on } from '@ngrx/store';
 import { DeckService } from 'src/app/services/deck.service';
-import { Pile } from '../models/pile.model';
+import { isValueOneBigger } from '../constants/value';
 import { Card } from '../models/card.model';
 import { Foundation } from '../models/foundation.model';
-import { isValueOneBigger } from '../constants/value';
+import { Pile } from '../models/pile.model';
+import { attemptMoveToFoundation, attemptMoveToPile, dealCards, drawFromDeck, newGame, resetGame, resetGameSoft, shuffleCards, undoMove } from './actions';
+import { AppState, BoardState, initialAppState, initialBoardState } from './state';
 
 const drawCardsFromDeck = (state: BoardState): BoardState => {
     let newDeckIndex;
+    let oldState = { ...state };
+
     if (state.deckIndex < state.deck.length - 4) {
         newDeckIndex = state.deckIndex + 3;
     } else if (state.deckIndex == state.deck.length - 1) {
@@ -18,9 +19,9 @@ const drawCardsFromDeck = (state: BoardState): BoardState => {
         newDeckIndex = state.deck.length - 1;
     }
     if (newDeckIndex === state.deck.length - 1) {
-        return { ...state, deckIndex: newDeckIndex, deckTurn: state.deckTurn + 1 }
+        return { ...state, deckIndex: newDeckIndex, deckTurn: state.deckTurn + 1, previousState: oldState }
     } else {
-        return { ...state, deckIndex: newDeckIndex }
+        return { ...state, deckIndex: newDeckIndex, previousState: oldState }
     }
 }
 
@@ -106,6 +107,7 @@ const removeCard = (state: BoardState, card: Card): BoardState => {
 
 const attemptMoveCardToPile = (state: BoardState, cards: Card[], dest: Pile): BoardState => {
     let newState: BoardState = JSON.parse(JSON.stringify(state));
+    let oldState = { ...state };
     let isValidMove = false;
 
     // If moving a King-headed stack to an empty pile
@@ -141,11 +143,16 @@ const attemptMoveCardToPile = (state: BoardState, cards: Card[], dest: Pile): Bo
         console.log("Invalid move");
     }
 
-    return { ...newState, isNewState: isValidMove };
+    if (isValidMove) {
+        return { ...newState, previousState: oldState };
+    } else {
+        return oldState;
+    }
 }
 
 const attemptMoveCardToFoundation = (state: BoardState, card: Card, dest: Foundation): BoardState => {
     let newState: BoardState = JSON.parse(JSON.stringify(state));
+    let oldState = { ...state };
     let isValidMove = false;
 
     // If moving an Ace to an empty foundation
@@ -178,14 +185,19 @@ const attemptMoveCardToFoundation = (state: BoardState, card: Card, dest: Founda
         console.log("Invalid move");
     }
 
-    return { ...newState, isNewState: isValidMove };
+    if (isValidMove) {
+        return { ...newState, previousState: oldState };
+    } else {
+        return oldState;
+    }
 }
 
 const restorePreviousState = (state: AppState): AppState => {
     let newState: AppState = JSON.parse(JSON.stringify(state));
 
-    if (newState.previousStates.length > 0) {
-        newState.boardState = newState.previousStates.pop();
+    if (newState.boardState.previousState) {
+        let oldPrevState = JSON.parse(JSON.stringify(newState.boardState.previousState));
+        newState.boardState = oldPrevState;
     }
 
     return newState;
@@ -210,7 +222,6 @@ const appReducer = createReducer(
 
 export const reducers: ActionReducerMap<AppState> = {
     boardState: null,
-    previousStates: null
 };
 
 export function metaReducer(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
@@ -221,12 +232,10 @@ export function metaReducer(reducer: ActionReducer<AppState>): ActionReducer<App
         } else {
             newState = JSON.parse(JSON.stringify(state));
         }
-        if (action === createNewState) {
-            // TODO: move previous state addition to effect to prevent invalid moves adding to undo stack
+        if (action.type.includes('\[Board\]') || action.type.includes('\[Deck\]')) {
             newState = {
                 ...state,
-                previousStates: JSON.parse(JSON.stringify(state.previousStates)).concat([{...state.boardState, isNewState: false}]),
-                boardState: boardReducer({...state.boardState, isNewState: false}, action)
+                boardState: boardReducer(state.boardState, action)
             };
         } else if (action.type.includes('\[App\]')) {
             newState = appReducer(state, action);

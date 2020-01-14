@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Actions, createEffect, ofType, Effect } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { concatMap } from 'rxjs/operators';
 import { newGame } from '.';
-import { Store, State } from '@ngrx/store';
+import { dealCards, shuffleCards } from './actions';
 import { AppState } from './state';
-import { shuffleCards, dealCards } from './actions';
-import { switchMap, tap, concatMap, withLatestFrom } from 'rxjs/operators';
 
 
 @Injectable()
@@ -17,23 +17,7 @@ export class AppEffects {
             dealCards(),
         ]
         ),
-        // tap((action) => console.log(action))
     ));
-
-    // @Effect()
-    // newState$ = this.actions$.pipe(
-    //     withLatestFrom(this.store),
-    //     // tap((action) => console.log(action))
-    // );
-
-    // @Effect()
-    // log$ = createEffect(() => this.actions$.pipe(
-    //     // switchMap((action) => [
-    //     //     shuffleCards(),
-    //     //     dealCards(),
-    //     // ]
-    //     // )
-    // ));
 
     constructor(
         private actions$: Actions,
