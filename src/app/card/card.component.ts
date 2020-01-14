@@ -3,7 +3,7 @@ import { Suit } from '../constants/suit';
 import { Value } from '../constants/value';
 import { Card } from '../models/card.model';
 import { Store } from '@ngrx/store';
-import { AppState, attemptMoveToPile, BoardState } from '../store';
+import { AppState, attemptMoveToPile, BoardState, attemptMoveToFoundation } from '../store';
 import { DragRef, CdkDrag, CdkDragEnd, CdkDropList, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Pile } from '../models/pile.model';
 import { Subscription } from 'rxjs';
@@ -57,7 +57,9 @@ export class CardComponent implements OnInit, OnDestroy {
 
     private dropped($event: CdkDragDrop<any,any>) {
         if (this.foundation) {
-            // TODO
+            let c = $event.previousContainer.element.nativeElement.dataset['cardval'];
+            let card: Card = { value: c[0], suit: c[1] } as Card;
+            this.store.dispatch(attemptMoveToFoundation({ card: card, dest: this.foundation}));
         } else if (this.pile) {
             let c = $event.previousContainer.element.nativeElement.dataset['cardval'];
             let cards = this.deckService.getCardStack(c);

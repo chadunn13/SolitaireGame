@@ -1,14 +1,14 @@
 <div class="container">
     <div class="slot">
-        <app-card *ngIf="this.card1" [card]="this.card1" [hidden]="false"></app-card>
+        <app-card *ngIf="this.card1" [card]="this.card1" [hidden]="false" [foundation]="null" [pile]="null"></app-card>
         <div class="empty" *ngIf="!this.card1"></div>
     </div>
     <div class="slot">
-        <app-card *ngIf="this.card2" [card]="this.card2" [hidden]="false" [disabled]="true"></app-card>
+        <app-card *ngIf="this.card2" [card]="this.card2" [hidden]="false" [disabled]="true" [foundation]="null" [pile]="null"></app-card>
         <div class="empty" *ngIf="!this.card2"></div>
     </div>
     <div class="slot">
-        <app-card *ngIf="this.card3" [card]="this.card3" [hidden]="false" [disabled]="true"></app-card>
+        <app-card *ngIf="this.card3" [card]="this.card3" [hidden]="false" [disabled]="true" [foundation]="null" [pile]="null"></app-card>
         <div class="empty" *ngIf="!this.card3"></div>
     </div>
 </div>

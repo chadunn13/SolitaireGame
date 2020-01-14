@@ -15,16 +15,27 @@ export const shuffleCards = createAction(
     '[Deck] Shuffle Cards'
 );
 
-export const resetState = createAction(
-    '[Board] Reset'
-);
-
 export const dealCards = createAction(
     '[Board] Deal Cards'
 );
 
 export const undoMove = createAction(
     '[App] Undo Move'
+);
+
+// fully reset the state with a newly shuffled deck
+export const newGame = createAction(
+    '[App] New Game'
+);
+
+// fully reset the state back to the original but with the same deck
+export const resetGame = createAction(
+    '[App] Reset Game'
+);
+
+// Only reset deck/pile/foundations, leave undo stack intact
+export const resetGameSoft = createAction(
+    '[App] Reset Game Soft'
 );
 
 export const attemptMoveToPile = createAction(
@@ -34,5 +45,5 @@ export const attemptMoveToPile = createAction(
 
 export const attemptMoveToFoundation = createAction(
     '[Board] Attempt Move to Foundation',
-    props<{ cards: Card[], dest: Foundation }>()
+    props<{ card: Card, dest: Foundation }>()
 );

@@ -1,21 +1,31 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { AppState } from '../store';
+import { DeckService } from '../services/deck.service';
 
 @Component({
     selector: 'app-foundation-row',
     templateUrl: './foundation-row.component.html',
     styleUrls: ['./foundation-row.component.css']
 })
-export class FoundationRowComponent implements OnInit {
+export class FoundationRowComponent implements OnInit, OnDestroy {
 
-    public foundations = [];
+    private foundations = [];
+    private subscriptions: Subscription;
 
-    constructor() { }
+    constructor(
+        private store: Store<AppState>,
+    ) { }
 
     ngOnInit() {
-        this.foundations.push("1");
-        this.foundations.push("2");
-        this.foundations.push("3");
-        this.foundations.push("4");
+        this.subscriptions = this.store.select('boardState').subscribe(state => {
+            this.foundations = state.foundations;
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.subscriptions.unsubscribe();
     }
 
 }

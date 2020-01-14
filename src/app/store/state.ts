@@ -3,8 +3,8 @@ import { Pile } from '../models/pile.model';
 import { Foundation } from '../models/foundation.model';
 
 export interface AppState {
-    boardState: BoardState,
-    previousStates: BoardState[]
+    boardState: BoardState;
+    previousStates: BoardState[];
 }
 
 export interface BoardState {
@@ -13,6 +13,7 @@ export interface BoardState {
     deckTurn: number;
     piles: Pile[];
     foundations: Foundation[];
+    isNewState: boolean;
 }
 
 export const initialBoardState: BoardState = {
@@ -20,10 +21,11 @@ export const initialBoardState: BoardState = {
     deckIndex: -1,
     deckTurn: 0,
     piles: [],
-    foundations: []
+    foundations: [],
+    isNewState: false,
 }
 
 export const initialAppState: AppState = {
     boardState: initialBoardState,
-    previousStates: []
+    previousStates: [],
 }

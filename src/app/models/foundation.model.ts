@@ -5,3 +5,9 @@ export interface Foundation {
     suit: string,
     cardStack: Card[],
 }
+
+export const nullFoundation: Foundation = {
+    index: -1,
+    suit: null,
+    cardStack: []
+};

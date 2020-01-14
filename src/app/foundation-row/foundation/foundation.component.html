@@ -1,1 +1,19 @@
-<div></div>
+<div class="container">
+    <div class="stack" *ngIf="!this.isEmpty()">
+        <app-card
+            [card]="this.getTopCard()"
+            [hidden]="false"
+            [foundation]="this.foundation"
+            [pile]="null"
+        ></app-card>
+    </div>
+    <div
+        class="empty"
+        *ngIf="this.isEmpty()"
+        cdkDropList
+        (cdkDropListDropped)="dropped($event)"
+        #listOne="cdkDropList"
+        [cdkDropListConnectedTo]="[listOne]"
+    >
+    </div>
+</div>

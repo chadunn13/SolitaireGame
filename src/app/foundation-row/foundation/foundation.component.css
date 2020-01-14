@@ -1,6 +1,28 @@
-div {
+/* div {
     width: 68px;
     height: 96px;
     border: 2px black solid;
     background-color: gray;
+} */
+
+.container {
+    height: 96px;
+    width: 68px;
+    margin: 8;
+}
+
+.empty {
+    border: 2px black solid;
+    display: inline-block;
+    height: 96px;
+    width: 68px;
+}
+
+.stack {
+    display: block;
+    position: relative;
+}
+
+.stack > app-card {
+    position: absolute;
 }

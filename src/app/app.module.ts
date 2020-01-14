@@ -18,6 +18,8 @@ import { DeckService } from './services/deck.service';
 import { metaReducer, reducers } from './store/reducers';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { initialAppState, initialBoardState } from './store';
+import { EffectsModule } from '@ngrx/effects';
+import { AppEffects } from './store/effects';
 
 @NgModule({
     declarations: [
@@ -43,7 +45,8 @@ import { initialAppState, initialBoardState } from './store';
                 metaReducers: [metaReducer],
                 initialState: initialAppState
             }
-        )
+        ),
+        EffectsModule.forRoot([AppEffects]),
     ],
     providers: [DeckService],
     bootstrap: [AppComponent]

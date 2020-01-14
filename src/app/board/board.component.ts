@@ -2,7 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DeckService } from '../services/deck.service';
 import { Cards, Card } from '../models/card.model';
-import { BoardState, shuffleCards, AppState, resetState, dealCards, undoMove } from '../store';
+import { BoardState, shuffleCards, AppState, dealCards, undoMove, newGame, resetGame, resetGameSoft } from '../store';
 import { Store } from '@ngrx/store';
 import { isValueOneBigger } from '../constants/value';
 
@@ -33,9 +33,15 @@ export class BoardComponent implements OnInit {
     }
 
     public newGame() {
-        this.store.dispatch(resetState());
-        this.store.dispatch(shuffleCards());
-        this.store.dispatch(dealCards());
+        this.store.dispatch(newGame());
+    }
+
+    public resetHard() {
+        this.store.dispatch(resetGame());
+    }
+
+    public resetSoft() {
+        this.store.dispatch(resetGameSoft());
     }
 
     public undoMove() {

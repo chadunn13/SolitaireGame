@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { AppState, attemptMoveToPile } from 'src/app/store';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
@@ -12,12 +12,9 @@ import { DeckService } from 'src/app/services/deck.service';
     templateUrl: './pile.component.html',
     styleUrls: ['./pile.component.css']
 })
-export class PileComponent implements OnInit {
+export class PileComponent implements OnInit, OnDestroy {
 
-    @Input() private index: number = 0;
-
-    public pile: Pile = nullPile;
-    private subscriptions: Subscription;
+    @Input() private pile: Pile = nullPile;
 
     constructor(
         private store: Store<AppState>,
@@ -25,13 +22,9 @@ export class PileComponent implements OnInit {
     ) { }
 
     ngOnInit() {
-        this.subscriptions = this.store.select('boardState').subscribe(state => {
-            this.pile = state.piles.find(pile => pile.index === this.index);
-        });
     }
 
     ngOnDestroy(): void {
-        this.subscriptions.unsubscribe();
     }
 
     public isEmpty(): boolean {
