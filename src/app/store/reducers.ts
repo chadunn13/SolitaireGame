@@ -4,7 +4,7 @@ import { isValueOneBigger } from '../constants/value';
 import { Card } from '../models/card.model';
 import { Foundation } from '../models/foundation.model';
 import { Pile } from '../models/pile.model';
-import { attemptMoveToFoundation, attemptMoveToPile, dealCards, drawFromDeck, newGame, resetGame, resetGameSoft, shuffleCards, undoMove } from './actions';
+import { attemptMoveToFoundation, attemptMoveToPile, dealCards, drawFromDeck, newGame, shuffleCards, undoMove } from './actions';
 import { AppState, BoardState, initialAppState, initialBoardState } from './state';
 
 const drawCardsFromDeck = (state: BoardState): BoardState => {
@@ -203,6 +203,16 @@ const restorePreviousState = (state: AppState): AppState => {
     return newState;
 }
 
+const calculateScore = (oldScore: number, foundations: Foundation[]): number => {
+    let score = 0;
+    for (let foundation of foundations) {
+        if (foundation && foundation.cardStack.length > 0) {
+            score += 5 * foundation.cardStack.length;
+        }
+    }
+    return score + oldScore;
+}
+
 const boardReducer = createReducer(
     initialBoardState,
     on(drawFromDeck, state => (drawCardsFromDeck(state))),
@@ -215,14 +225,14 @@ const boardReducer = createReducer(
 const appReducer = createReducer(
     initialAppState,
     on(undoMove, state => (restorePreviousState(state))),
-    on(resetGame, state => ({ ...state })),
-    on(resetGameSoft, state => ({ ...state })),
-    on(newGame, state => (initialAppState)), // TODO: effect to reshuffle/redeal
+    on(newGame, state => ({...initialAppState, score: state.score - 52})),
 );
 
 export const reducers: ActionReducerMap<AppState> = {
     boardState: null,
+    score: null,
 };
+
 
 export function metaReducer(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
     return function (state, action) {
@@ -233,12 +243,15 @@ export function metaReducer(reducer: ActionReducer<AppState>): ActionReducer<App
             newState = JSON.parse(JSON.stringify(state));
         }
         if (action.type.includes('\[Board\]') || action.type.includes('\[Deck\]')) {
+            let newBoardState = boardReducer(state.boardState, action);
             newState = {
                 ...state,
-                boardState: boardReducer(state.boardState, action)
+                boardState: newBoardState,
+                score: calculateScore(state.score, newBoardState.foundations)
             };
         } else if (action.type.includes('\[App\]')) {
-            newState = appReducer(state, action);
+            let newAppState = appReducer(state, action);
+            newState = { ...newAppState, score: {calculateScore(newAppState.score, newAppState.boardState.foundations) };
         }
         return newState;
     };

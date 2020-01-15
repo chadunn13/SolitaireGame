@@ -5,6 +5,9 @@ export const selectBoardState = (state: AppState) => { return state.boardState }
 
 export const getBoardState = createFeatureSelector('boardState');
 
+export const getScore = createFeatureSelector('score');
+
+
 export const selectDeck = createSelector(
     selectBoardState,
     (state: BoardState) => state.deck

@@ -4,6 +4,7 @@ import { Foundation } from '../models/foundation.model';
 
 export interface AppState {
     boardState: BoardState;
+    score: ScoreState;
 }
 
 export interface BoardState {
@@ -15,6 +16,11 @@ export interface BoardState {
     previousState: BoardState;
 }
 
+export interface ScoreState {
+    totalScore: number;
+    gameScore: number;
+}
+
 export const initialBoardState: BoardState = {
     deck: Cards,
     deckIndex: -1,
@@ -24,6 +30,12 @@ export const initialBoardState: BoardState = {
     previousState: null,
 }
 
+export const initialScoreState: ScoreState = {
+    totalScore: 0,
+    gameScore: 0,
+}
+
 export const initialAppState: AppState = {
     boardState: initialBoardState,
+    score: initialScoreState,
 }
