@@ -14,7 +14,6 @@ export const Value = {
     k: [12, "K"],
 }
 
-// TODO: implement
 export const isValueOneBigger = (bigger: string, smaller: string): boolean => {
     return Value[bigger][0] === Value[smaller][0] + 1;
 }
