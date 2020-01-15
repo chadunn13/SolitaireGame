@@ -203,14 +203,14 @@ const restorePreviousState = (state: AppState): AppState => {
     return newState;
 }
 
-const calculateScore = (oldScore: number, foundations: Foundation[]): number => {
+const calculateScore = (foundations: Foundation[]): number => {
     let score = 0;
     for (let foundation of foundations) {
         if (foundation && foundation.cardStack.length > 0) {
             score += 5 * foundation.cardStack.length;
         }
     }
-    return score + oldScore;
+    return score;
 }
 
 const boardReducer = createReducer(
@@ -225,7 +225,7 @@ const boardReducer = createReducer(
 const appReducer = createReducer(
     initialAppState,
     on(undoMove, state => (restorePreviousState(state))),
-    on(newGame, state => ({...initialAppState, score: state.score - 52})),
+    on(newGame, state => ({...initialAppState, score: { totalScore: state.score.totalScore + state.score.gameScore - 52, gameScore: 0 }})),
 );
 
 export const reducers: ActionReducerMap<AppState> = {
@@ -245,13 +245,12 @@ export function metaReducer(reducer: ActionReducer<AppState>): ActionReducer<App
         if (action.type.includes('\[Board\]') || action.type.includes('\[Deck\]')) {
             let newBoardState = boardReducer(state.boardState, action);
             newState = {
-                ...state,
+                ...newState,
                 boardState: newBoardState,
-                score: calculateScore(state.score, newBoardState.foundations)
+                score: {...newState.score, gameScore: calculateScore(newBoardState.foundations)}
             };
         } else if (action.type.includes('\[App\]')) {
-            let newAppState = appReducer(state, action);
-            newState = { ...newAppState, score: {calculateScore(newAppState.score, newAppState.boardState.foundations) };
+            newState = appReducer(state, action);
         }
         return newState;
     };

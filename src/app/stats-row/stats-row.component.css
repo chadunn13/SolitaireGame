@@ -3,3 +3,7 @@ div {
     height: 100px;
     background-color: orange;
 }
+
+h1 {
+    margin: 0;
+}
