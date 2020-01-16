@@ -1,6 +1,7 @@
 import { Card, Cards } from '../models/card.model';
 import { Pile } from '../models/pile.model';
 import { Foundation } from '../models/foundation.model';
+import { Timestamp } from 'rxjs';
 
 export interface AppState {
     boardState: BoardState;
@@ -14,6 +15,7 @@ export interface BoardState {
     piles: Pile[];
     foundations: Foundation[];
     previousState: BoardState;
+    moves: number;
 }
 
 export interface ScoreState {
@@ -28,6 +30,7 @@ export const initialBoardState: BoardState = {
     piles: [],
     foundations: [],
     previousState: null,
+    moves: 0,
 }
 
 export const initialScoreState: ScoreState = {

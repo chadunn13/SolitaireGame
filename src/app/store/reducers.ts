@@ -19,9 +19,9 @@ const drawCardsFromDeck = (state: BoardState): BoardState => {
         newDeckIndex = state.deck.length - 1;
     }
     if (newDeckIndex === state.deck.length - 1) {
-        return { ...state, deckIndex: newDeckIndex, deckTurn: state.deckTurn + 1, previousState: oldState }
+        return { ...state, deckIndex: newDeckIndex, deckTurn: state.deckTurn + 1, previousState: oldState, moves: oldState.moves + 1 }
     } else {
-        return { ...state, deckIndex: newDeckIndex, previousState: oldState }
+        return { ...state, deckIndex: newDeckIndex, previousState: oldState, moves: oldState.moves + 1 }
     }
 }
 
@@ -144,7 +144,7 @@ const attemptMoveCardToPile = (state: BoardState, cards: Card[], dest: Pile): Bo
     }
 
     if (isValidMove) {
-        return { ...newState, previousState: oldState };
+        return { ...newState, previousState: oldState, moves: oldState.moves + 1 };
     } else {
         return oldState;
     }
@@ -186,7 +186,7 @@ const attemptMoveCardToFoundation = (state: BoardState, card: Card, dest: Founda
     }
 
     if (isValidMove) {
-        return { ...newState, previousState: oldState };
+        return { ...newState, previousState: oldState, moves: oldState.moves + 1 };
     } else {
         return oldState;
     }
@@ -197,7 +197,7 @@ const restorePreviousState = (state: AppState): AppState => {
 
     if (newState.boardState.previousState) {
         let oldPrevState = JSON.parse(JSON.stringify(newState.boardState.previousState));
-        newState.boardState = oldPrevState;
+        newState.boardState = {...oldPrevState, moves: newState.boardState.moves + 1};
     }
 
     return newState;

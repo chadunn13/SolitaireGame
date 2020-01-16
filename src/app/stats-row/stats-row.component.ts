@@ -16,6 +16,7 @@ export class StatsRowComponent implements OnInit, OnDestroy {
     private subscriptions: Subscription = new Subscription();
     private score: number;
     private boardState: BoardState;
+    private moves: number;
 
     constructor(
         private store: Store<AppState>,
