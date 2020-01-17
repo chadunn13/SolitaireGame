@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SolverComponent } from '../../../src/app/stats-row/solver/solver.component';
+import { SolverComponent } from '../../../src/app/solver/solver.component';
 
 describe('SolverComponent', () => {
   let component: SolverComponent;

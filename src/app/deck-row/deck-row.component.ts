@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { AppState } from '../store';
 
 @Component({
     selector: 'app-deck-row',
@@ -7,9 +10,22 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DeckRowComponent implements OnInit {
 
-    constructor() { }
+    private foundations = [];
+    private subscriptions: Subscription;
+
+    constructor(
+        private store: Store<AppState>,
+    ) { }
 
     ngOnInit() {
+        this.subscriptions = this.store.select('boardState').subscribe(state => {
+            this.foundations = state.foundations;
+        });
     }
+
+    ngOnDestroy(): void {
+        this.subscriptions.unsubscribe();
+    }
+
 
 }

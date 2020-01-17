@@ -2,6 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { Card } from '../models/card.model';
 import { Pile } from '../models/pile.model';
 import { Foundation } from '../models/foundation.model';
+import { AppState } from '.';
 
 export const drawFromDeck = createAction(
     '[Deck] Draw From Deck'
@@ -35,4 +36,9 @@ export const attemptMoveToPile = createAction(
 export const attemptMoveToFoundation = createAction(
     '[Board] Attempt Move to Foundation',
     props<{ card: Card, dest: Foundation }>()
+);
+
+export const setAppState = createAction(
+    '[App] Set App State',
+    props<{ newState: AppState }>()
 );

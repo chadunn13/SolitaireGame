@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { isValueOneBigger } from '../constants/value';
@@ -10,7 +10,7 @@ import { AppState, BoardState, newGame, undoMove } from '../store';
     templateUrl: './board.component.html',
     styleUrls: ['./board.component.css']
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent implements OnInit, OnDestroy {
 
     private subscriptions: Subscription;
     private boardState: BoardState;
@@ -24,7 +24,7 @@ export class BoardComponent implements OnInit {
             this.boardState = state;
         });
 
-        // this.newGame();
+        this.store.dispatch(newGame());
     }
 
     ngOnDestroy(): void {

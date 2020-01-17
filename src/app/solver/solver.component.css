@@ -1,0 +1,9 @@
+button {
+    margin-left: 20px;
+    width: 120px;
+    height: 47px;
+}
+
+div {
+    display: inline-flex;
+}

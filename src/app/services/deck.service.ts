@@ -3,6 +3,7 @@ import { Card } from '../models/card.model';
 import { Subscription } from 'rxjs';
 import { BoardState, AppState } from '../store';
 import { Store } from '@ngrx/store';
+import { isValueOneBigger } from '../constants/value';
 
 @Injectable({
     providedIn: 'root',
@@ -73,5 +74,39 @@ export class DeckService {
 
         return cards;
     }
+
+    public static isGameComplete(boardState: BoardState): boolean {
+        if (boardState.deck.length > 0) {
+            return false;
+        }
+        for (let pile of boardState.piles) {
+            if (pile.shownCards.length > 0 || pile.hiddenCards.length > 0) {
+                return false;
+            }
+        }
+        for (let foundation of boardState.foundations) {
+            if (foundation.cardStack.length !== 13) {
+                return false;
+            }
+            let previousCard: Card = null;
+            for (let card of foundation.cardStack) {
+                if (card.suit !== foundation.suit) {
+                    return false;
+                }
+                if (!previousCard) {
+                    if (card.value !== "a") {
+                        return false;
+                    }
+                } else {
+                    if (!isValueOneBigger(card.value, previousCard.value)) {
+                        return false;
+                    }
+                }
+                previousCard = card;
+            }
+        }
+        return true;
+    }
+
 
 }

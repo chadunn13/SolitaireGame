@@ -4,10 +4,16 @@ import { isValueOneBigger } from '../constants/value';
 import { Card } from '../models/card.model';
 import { Foundation } from '../models/foundation.model';
 import { Pile } from '../models/pile.model';
-import { attemptMoveToFoundation, attemptMoveToPile, dealCards, drawFromDeck, newGame, shuffleCards, undoMove } from './actions';
+import { attemptMoveToFoundation, attemptMoveToPile, dealCards, drawFromDeck, newGame, shuffleCards, undoMove, setAppState } from './actions';
 import { AppState, BoardState, initialAppState, initialBoardState } from './state';
 
-const drawCardsFromDeck = (state: BoardState): BoardState => {
+export const drawCardsFromDeck = (state: BoardState, shouldReturnNull: boolean = false): BoardState => {
+    if (shouldReturnNull) {
+        if (!state.deck || state.deck.length === 0 || state.deckTurn >= 3) {
+            return null;
+        }
+    }
+
     let newDeckIndex;
     let oldState = { ...state };
 
@@ -105,7 +111,7 @@ const removeCard = (state: BoardState, card: Card): BoardState => {
 
 
 
-const attemptMoveCardToPile = (state: BoardState, cards: Card[], dest: Pile): BoardState => {
+export const attemptMoveCardToPile = (state: BoardState, cards: Card[], dest: Pile, shouldReturnNull: boolean = false): BoardState => {
     let newState: BoardState = JSON.parse(JSON.stringify(state));
     let oldState = { ...state };
     let isValidMove = false;
@@ -140,7 +146,11 @@ const attemptMoveCardToPile = (state: BoardState, cards: Card[], dest: Pile): Bo
             newDest.shownCards.push(card);
         }
     } else {
-        console.log("Invalid move");
+        if (shouldReturnNull) {
+            return null;
+        } else {
+            console.log("Invalid move");
+        }
     }
 
     if (isValidMove) {
@@ -150,7 +160,7 @@ const attemptMoveCardToPile = (state: BoardState, cards: Card[], dest: Pile): Bo
     }
 }
 
-const attemptMoveCardToFoundation = (state: BoardState, card: Card, dest: Foundation): BoardState => {
+export const attemptMoveCardToFoundation = (state: BoardState, card: Card, dest: Foundation, shouldReturnNull: boolean = false): BoardState => {
     let newState: BoardState = JSON.parse(JSON.stringify(state));
     let oldState = { ...state };
     let isValidMove = false;
@@ -182,7 +192,11 @@ const attemptMoveCardToFoundation = (state: BoardState, card: Card, dest: Founda
         // set the foundation suit
         dest.suit = card.suit;
     } else {
-        console.log("Invalid move");
+        if (shouldReturnNull) {
+            return null;
+        } else {
+            console.log("Invalid move");
+        }
     }
 
     if (isValidMove) {
@@ -197,13 +211,13 @@ const restorePreviousState = (state: AppState): AppState => {
 
     if (newState.boardState.previousState) {
         let oldPrevState = JSON.parse(JSON.stringify(newState.boardState.previousState));
-        newState.boardState = {...oldPrevState, moves: newState.boardState.moves + 1};
+        newState.boardState = { ...oldPrevState, moves: newState.boardState.moves + 1 };
     }
 
     return newState;
 }
 
-const calculateScore = (foundations: Foundation[]): number => {
+export const calculateScore = (foundations: Foundation[]): number => {
     let score = 0;
     for (let foundation of foundations) {
         if (foundation && foundation.cardStack.length > 0) {
@@ -224,8 +238,9 @@ const boardReducer = createReducer(
 
 const appReducer = createReducer(
     initialAppState,
+    on(setAppState, (state, { newState }) => (newState)),
     on(undoMove, state => (restorePreviousState(state))),
-    on(newGame, state => ({...initialAppState, score: { totalScore: state.score.totalScore + state.score.gameScore - 52, gameScore: 0 }})),
+    on(newGame, state => ({ ...initialAppState, score: { totalScore: state.score.totalScore + state.score.gameScore - 52, gameScore: 0 } })),
 );
 
 export const reducers: ActionReducerMap<AppState> = {
@@ -247,7 +262,7 @@ export function metaReducer(reducer: ActionReducer<AppState>): ActionReducer<App
             newState = {
                 ...newState,
                 boardState: newBoardState,
-                score: {...newState.score, gameScore: calculateScore(newBoardState.foundations)}
+                score: { ...newState.score, gameScore: calculateScore(newBoardState.foundations) }
             };
         } else if (action.type.includes('\[App\]')) {
             newState = appReducer(state, action);

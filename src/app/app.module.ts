@@ -19,7 +19,7 @@ import { StatsRowComponent } from './stats-row/stats-row.component';
 import { initialAppState } from './store';
 import { AppEffects } from './store/effects';
 import { metaReducer, reducers } from './store/reducers';
-import { SolverComponent } from './stats-row/solver/solver.component';
+import { SolverComponent } from './solver/solver.component';
 
 
 @NgModule({
