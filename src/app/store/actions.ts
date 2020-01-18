@@ -35,7 +35,7 @@ export const attemptMoveToPile = createAction(
 
 export const attemptMoveToFoundation = createAction(
     '[Board] Attempt Move to Foundation',
-    props<{ card: Card, dest: Foundation }>()
+    props<{ cards: Card[], dest: Foundation }>()
 );
 
 export const setAppState = createAction(

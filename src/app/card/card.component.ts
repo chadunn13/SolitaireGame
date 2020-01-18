@@ -59,7 +59,8 @@ export class CardComponent implements OnInit, OnDestroy {
         if (this.foundation) {
             let c = $event.previousContainer.element.nativeElement.dataset['cardval'];
             let card: Card = { value: c[0], suit: c[1] } as Card;
-            this.store.dispatch(attemptMoveToFoundation({ card: card, dest: this.foundation}));
+            let cards = this.deckService.getCardStack(c);
+            this.store.dispatch(attemptMoveToFoundation({ cards, dest: this.foundation}));
         } else if (this.pile) {
             let c = $event.previousContainer.element.nativeElement.dataset['cardval'];
             let cards = this.deckService.getCardStack(c);

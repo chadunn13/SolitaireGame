@@ -179,10 +179,22 @@ export const attemptMoveCardToPile = (state: BoardState, cards: Card[], dest: Pi
     }
 }
 
-export const attemptMoveCardToFoundation = (state: BoardState, card: Card, dest: Foundation, shouldReturnNull: boolean = false): BoardState => {
+export const attemptMoveCardToFoundation = (state: BoardState, cards: Card[], dest: Foundation, shouldReturnNull: boolean = false): BoardState => {
     let newState: BoardState = JSON.parse(JSON.stringify(state));
     let oldState = { ...state };
     let isValidMove = false;
+
+    // If trying to move a stack, fail
+    if (cards.length > 1) {
+        if (shouldReturnNull) {
+            return null;
+        } else {
+            console.log("Invalid move");
+            return oldState;
+        }
+    }
+
+    let card = cards[0];
 
     // If moving an Ace to an empty foundation
     if (dest.cardStack.length === 0) {
@@ -252,7 +264,7 @@ const boardReducer = createReducer(
     on(shuffleCards, state => ({ ...state, deck: DeckService.shuffleDeck(JSON.parse(JSON.stringify(state.deck))) })),
     on(dealCards, state => (dealCardsToPiles(state))),
     on(attemptMoveToPile, (state, { cards, dest }) => (attemptMoveCardToPile(state, cards, dest))),
-    on(attemptMoveToFoundation, (state, { card, dest }) => (attemptMoveCardToFoundation(state, card, dest))),
+    on(attemptMoveToFoundation, (state, { cards, dest }) => (attemptMoveCardToFoundation(state, cards, dest))),
 );
 
 const appReducer = createReducer(

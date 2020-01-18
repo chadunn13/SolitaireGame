@@ -106,7 +106,7 @@ export class Solver {
 
     private moveToFoundation(card: Card): boolean {
         for (let foundation of this.state.boardState.foundations) {
-            let moveState = attemptMoveCardToFoundation(this.state.boardState, card, foundation, true);
+            let moveState = attemptMoveCardToFoundation(this.state.boardState, DeckService.getCardStack(card.value + card.suit, this.state.boardState), foundation, true);
             if (moveState) {
                 this.addSolver({ ...this.state, boardState: moveState });
                 return true;
@@ -115,30 +115,52 @@ export class Solver {
         return false;
     }
 
-    private moveFromDeck(card): boolean {
+    private moveFromDeckToFoundation(card): boolean {
         if (this.moveToFoundation(card)) {
             return true;
         }
-        this.moveToPile(card);
         return false;
     }
 
     private findValidActions(double = false) {
+        // best move, move from deck to foundation
         if (this.state.boardState.deckIndex >= 0) {
-            if (this.moveFromDeck(this.state.boardState.deck[this.state.boardState.deckIndex])) {
+            if (this.moveFromDeckToFoundation(this.state.boardState.deck[this.state.boardState.deckIndex])) {
                 // best move
                 return;
             }
         }
 
+        // second best move, move from pile to foundation
         for (let pile of this.state.boardState.piles) {
-            for (let card of pile.shownCards) {
+            if (pile.shownCards.length > 0) {
+                // only attempt move if card is topmost in stack
+                let card = pile.shownCards[pile.shownCards.length - 1];
                 if (this.moveToFoundation(card)) {
-                    // second best move;
                     return;
                 }
+            }
+        }
+
+        // third best move, move entire stack if exposing a hidden card
+        for (let pile of this.state.boardState.piles) {
+            if (pile.hiddenCards.length > 0 && pile.shownCards.length > 0) {
+                let count = this.solvers.length;
+                this.moveToPile(pile.shownCards[0], pile);
+                if (this.solvers.length > count) {
+                    return;
+                }
+            }
+        }
+
+        for (let pile of this.state.boardState.piles) {
+            for (let card of pile.shownCards) {
                 this.moveToPile(card, pile);
             }
+        }
+
+        if (this.state.boardState.deckIndex >= 0) {
+            this.moveToPile(this.state.boardState.deck[this.state.boardState.deckIndex]);
         }
 
         // for (let foundation of this.state.boardState.foundations) {

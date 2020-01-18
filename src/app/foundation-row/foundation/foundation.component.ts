@@ -19,6 +19,7 @@ export class FoundationComponent implements OnInit, OnDestroy {
 
     constructor(
         private store: Store<AppState>,
+        private deckService: DeckService,
     ) { }
 
     ngOnInit() {
@@ -51,7 +52,8 @@ export class FoundationComponent implements OnInit, OnDestroy {
         {
             let c = $event.previousContainer.element.nativeElement.dataset['cardval'];
             let card: Card = { value: c[0], suit: c[1] } as Card;
-            this.store.dispatch(attemptMoveToFoundation({ card: card, dest: this.foundation}));
+            let cards = this.deckService.getCardStack(c);
+            this.store.dispatch(attemptMoveToFoundation({ cards: cards, dest: this.foundation}));
         }
     }
 }
