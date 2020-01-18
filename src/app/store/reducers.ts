@@ -6,6 +6,8 @@ import { Foundation } from '../models/foundation.model';
 import { Pile } from '../models/pile.model';
 import { attemptMoveToFoundation, attemptMoveToPile, dealCards, drawFromDeck, newGame, shuffleCards, undoMove, setAppState } from './actions';
 import { AppState, BoardState, initialAppState, initialBoardState } from './state';
+import { Suit } from '../constants/suit';
+import { getSupportedInputTypes } from '@angular/cdk/platform';
 
 export const drawCardsFromDeck = (state: BoardState, shouldReturnNull: boolean = false): BoardState => {
     if (shouldReturnNull) {
@@ -41,6 +43,18 @@ const removeTopCard = (state: BoardState): BoardState => {
     return { ...state, deck: newDeck, deckIndex: newDeckIndex };
 }
 
+const getSuit = (index) => {
+    switch (index) {
+        case 0:
+            return "s";
+        case 1:
+            return "d";
+        case 2:
+            return "c";
+        case 3:
+            return "h";
+    }
+}
 
 const dealCardsToPiles = (state: BoardState): BoardState => {
     let newPiles: Pile[] = [];
@@ -60,7 +74,7 @@ const dealCardsToPiles = (state: BoardState): BoardState => {
     let newFoundations = [];
     for (let i = 0; i < 4; i++) {
         newFoundations.push(
-            { index: i, cardStack: [], suit: null }
+            { index: i, cardStack: [], suit: getSuit(i) }
         );
     }
     return { ...state, piles: newPiles, deck: newDeck, foundations: newFoundations };
@@ -75,10 +89,10 @@ const removeCard = (state: BoardState, card: Card): BoardState => {
         for (let i = 0; i < foundation.cardStack.length; i++) {
             if (DeckService.areCardsEqual(card, foundation.cardStack[i])) {
                 foundation.cardStack.splice(i, 1);
-                // If last card, unbind the foundation's suit so any may go there
-                if (foundation.cardStack.length === 0) {
-                    foundation.suit = null;
-                }
+                // // If last card, unbind the foundation's suit so any may go there
+                // if (foundation.cardStack.length === 0) {
+                //     foundation.suit = null;
+                // }
                 return newState;
             }
         }
@@ -111,7 +125,7 @@ const removeCard = (state: BoardState, card: Card): BoardState => {
 
 
 
-export const attemptMoveCardToPile = (state: BoardState, cards: Card[], dest: Pile, shouldReturnNull: boolean = false): BoardState => {
+export const attemptMoveCardToPile = (state: BoardState, cards: Card[], dest: Pile, shouldReturnNull: boolean = false, currentPile?: Pile): BoardState => {
     let newState: BoardState = JSON.parse(JSON.stringify(state));
     let oldState = { ...state };
     let isValidMove = false;
@@ -120,6 +134,11 @@ export const attemptMoveCardToPile = (state: BoardState, cards: Card[], dest: Pi
     if (dest.shownCards.length === 0 && dest.hiddenCards.length === 0) {
         if (cards[0].value === "k") {
             isValidMove = true;
+            if (currentPile && shouldReturnNull) {
+                if (currentPile.hiddenCards.length === 0) {
+                    return null;
+                }
+            }
         }
     }
     // If moving a stack onto a normal pile
@@ -167,7 +186,7 @@ export const attemptMoveCardToFoundation = (state: BoardState, card: Card, dest:
 
     // If moving an Ace to an empty foundation
     if (dest.cardStack.length === 0) {
-        if (card.value === "a") {
+        if (card.value === "a" && dest.suit === card.suit) {
             isValidMove = true;
         }
     }

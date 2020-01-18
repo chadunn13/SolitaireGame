@@ -6,6 +6,7 @@ import { AppState, attemptMoveToFoundation } from 'src/app/store';
 import { DeckService } from 'src/app/services/deck.service';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Card } from 'src/app/models/card.model';
+import { Suit } from 'src/app/constants/suit';
 
 @Component({
     selector: 'app-foundation',
@@ -40,6 +41,10 @@ export class FoundationComponent implements OnInit, OnDestroy {
         } else {
             return null;
         }
+    }
+
+    public getDisplaySuit() {
+        return Suit[this.foundation.suit];
     }
 
     private dropped($event: CdkDragDrop<any,any>) {

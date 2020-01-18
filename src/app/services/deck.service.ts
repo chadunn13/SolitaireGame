@@ -75,6 +75,56 @@ export class DeckService {
         return cards;
     }
 
+    public static getCardStack(c: string, s: BoardState): Card[] {
+        let cards = [];
+        let card: Card = { value: c[0], suit: c[1] } as Card;
+
+        for (let foundation of s.foundations) {
+            let found = false;
+            for (let i = 0; i < foundation.cardStack.length; i++) {
+                if (DeckService.areCardsEqual(card, foundation.cardStack[i]) || found) {
+                    cards.push(foundation.cardStack[i]);
+                }
+            }
+            if (found) {
+                return cards;
+            }
+        }
+
+        for (let pile of s.piles) {
+            let found = false;
+            for (let i = 0; i < pile.shownCards.length; i++) {
+                if (DeckService.areCardsEqual(card, pile.shownCards[i]) || found) {
+                    cards.push(pile.shownCards[i]);
+                    found = true;
+                }
+            }
+            if (found) {
+                return cards;
+            }
+        }
+
+        for (let i = 0; i < s.deck.length; i++) {
+            if (DeckService.areCardsEqual(card, s.deck[i])) {
+                cards.push(s.deck[i]);
+                return cards;
+            }
+        }
+
+        return cards;
+    }
+
+    public static getParentCard(card: Card, s: BoardState): Card {
+        for (let pile of s.piles) {
+            for (let i = 1; i < pile.shownCards.length; i++) {
+                if (DeckService.areCardsEqual(card, pile.shownCards[i])) {
+                    return pile.shownCards[i - 1];
+                }
+            }
+        }
+        return null;
+    }
+
     public static isGameComplete(boardState: BoardState): boolean {
         if (boardState.deck.length > 0) {
             return false;

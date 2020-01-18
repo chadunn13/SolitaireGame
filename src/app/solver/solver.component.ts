@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AppState, newGame } from 'src/app/store';
+import { AppState, newGame, setAppState } from 'src/app/store';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { Solver } from './solver';
@@ -48,7 +48,7 @@ export class SolverComponent implements OnInit, OnDestroy {
     private startSolve() {
         this.isRunning = true;
 
-        let headSolver = new Solver(this.state, this.store);
+        let headSolver = new Solver(this.state, this.store, []);
         console.log('solving');
         headSolver.startSolver().then((resolve) => {
             console.log(resolve);
@@ -57,8 +57,14 @@ export class SolverComponent implements OnInit, OnDestroy {
             } else {
                 console.log('fail');
             }
+            console.log("iterations: ", headSolver.countIters());
+            console.log("max score:");
+            let maxState = headSolver.getMaxScore();
+            console.log(maxState);
+            this.store.dispatch(setAppState({newState: maxState}))
         }).catch((reject) => {
             console.log('reject1');
+            console.log(reject);
         });
 
         this.isRunning = false;
